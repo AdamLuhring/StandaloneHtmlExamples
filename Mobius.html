@@ -1,0 +1,70 @@
+<html>
+<canvas id="theCanvas" width="600" height="600" style="border: 1px solid black"></canvas><br>
+Hover to explore; left-click to randomize.
+<script>
+function randomize(){
+    w = [Math.random()*4-2,Math.random()*4-2];
+    x = [Math.random()*4-2,Math.random()*4-2];
+    y = [Math.random()*4-2,Math.random()*4-2];
+    z = [Math.random()*4-2,Math.random()*4-2];
+}
+function draw(){
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,cnvs.width,cnvs.height);
+    current = starter;
+    for(i=0;i<300;i++){
+        col = "hsl("+i+",100%,50%)"
+        graphPoint(current,col);
+        next = mobius(current,w,x,y,z);
+        graphLine(current,next,col);
+        current = next;
+    }
+}
+function mult(a,b){
+    return [a[0]*b[0]-a[1]*b[1],a[0]*b[1]+a[1]*b[0]];
+}
+function add(a,b){
+    return [a[0]+b[0],a[1]+b[1]];
+}
+function divide(a,b){
+    divisor = b[0]*b[0]+b[1]*b[1];
+    return [(a[0]*b[0]+a[1]*b[1])/divisor,(a[1]*b[0]-a[0]*b[1])/divisor]
+}
+function mobius(inVal,a,b,c,d){
+    return divide(add(mult(inVal,a),b),add(mult(inVal,c),d));
+}
+function graphPoint(a,col){
+    ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.arc(midX+unitX*a[0],midY+unitY*a[1],5,0,TAU);
+    ctx.fill();
+}
+function graphLine(a,b,col){
+    ctx.strokeStyle = col;
+    ctx.beginPath();
+    ctx.moveTo(midX+unitX*a[0],midY+unitY*a[1]);
+    ctx.lineTo(midX+unitX*b[0],midY+unitY*b[1]);
+    ctx.stroke();
+}
+cnvs = document.getElementById("theCanvas");
+ctx = cnvs.getContext("2d");
+TAU = Math.PI*2;
+midX = cnvs.height/2;
+midY = cnvs.height/2;
+unitX = midX/10;
+unitY = midY/10;
+randomize();
+starter = [1,0];
+draw();
+cnvs.onmousemove = function(e){
+    rawX = e.clientX-cnvs.offsetLeft;
+    rawY = e.clientY-cnvs.offsetTop;
+    starter = [(rawX-midX)/unitX,(rawY-midY)/unitY];
+    draw();
+}
+cnvs.onclick = function(){
+    randomize();
+    draw();
+}
+</script>
+</html>

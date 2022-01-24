@@ -1,0 +1,96 @@
+<html>
+<canvas id="theCanvas" width="800" height="600" style="border: 1px solid black"></canvas>
+<script>
+function evaluate(a,b,c){
+    i = (a/b+1)%1
+    j = (b/c+1)%1
+    k = (c/a+1)%1
+    /*i = Math.cos(2*a/c-b);
+    j = Math.cos(3*b/a-c);
+    k = Math.cos(5*c/b-a);*/
+    /*i = Math.pow(a%b,c);
+    j = Math.pow(b%c,a);
+    k = Math.pow(c%a,b);*/
+    /*i = a%b%c-b%a%c;
+    j = b%c%a-c%b%a;
+    k = c%a%b-a%c%b;*/
+    /*i = (.15*a/b/c)%a%b%c;
+    j = (.15*b/c/a)%b%c%a;
+    k = (.15*c/a/b)%c%a%b;*/
+    /*i = Math.atan2(a/c,b)%c;
+    j = Math.atan2(b/a,c)%a;
+    k = Math.atan2(c/b,a)%b;*/
+    /*i = (1/a) ^ (1/b);
+    j = (1/b) ^ (1/c);
+    k = (1/c) ^ (1/a);
+    a = i; b = j; c = k;
+    i = a-b; j = b-c; k = c-a;*/
+    if((i==j)||(j==k)||(i==k)){
+        return 6;
+    }
+    if((i>j)&&(j>k)){
+        return 0;
+    }
+    if((i>k)&&(k>j)){
+        return 1;
+    }
+    if((j>i)&&(i>k)){
+        return 2;
+    }
+    if((j>k)&&(k>i)){
+        return 3;
+    }
+    if((k>i)&&(i>j)){
+        return 4;
+    }
+    if((k>j)&&(j>i)){
+        return 5;
+    }
+}
+function draw(){
+    ctx.fillStyle = "black";
+    ctx.fillRect(0,0,cnvs.width,cnvs.height);
+    for(x=0;x<res;x++){
+        for(y=0;y<res;y++){
+            for(z=0;z<res;z++){
+                if(Math.round(x+y+z)==res){
+                /*switch(evaluate(x/res,y/res,z/res)){
+                    case 0:
+                        ctx.fillStyle = "rgb(255,0,0)";
+                        break;
+                    case 1:
+                        ctx.fillStyle = "rgb(0,255,0)";
+                        break;
+                    case 2:
+                        ctx.fillStyle = "rgb(0,0,255)";
+                        break;
+                    case 3:
+                        ctx.fillStyle = "rgb(255,255,0)";
+                        break;
+                    case 4:
+                        ctx.fillStyle = "rgb(255,0,255)";
+                        break;
+                    case 5:
+                        ctx.fillStyle = "rgb(0,255,255)";
+                }*/
+                value = evaluate(x/res,y/res,z/res);
+                light = 50
+                hue = Math.floor(value*60);
+                if(value==6){
+                    light = 100;
+                }
+                ctx.fillStyle = "hsl("+hue+",100%,"+light+"%)";
+                ctx.beginPath();
+                ctx.arc(x*.75+z*1.5+20,y*1.25+z*1.25+20,2,0,Math.PI*2);
+                ctx.fill();
+                }
+            }
+        }
+    }
+}
+cnvs = document.getElementById("theCanvas");
+ctx = cnvs.getContext("2d");
+res = 440;
+draw();
+</script>
+</html>

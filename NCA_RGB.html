@@ -1,0 +1,92 @@
+<html>
+<canvas id="theCanvas" width="600" height="600" style="border: 1px solid black"></canvas><br>
+<button type="button" id="random">Randomize weights</button>
+<button type="button" id="pause">Stop</button>
+<script>
+function redraw(){
+    for(a=0;a<across;a++){
+        for(b=0;b<across;b++){
+            ctx.fillStyle = "rgb("+Math.floor(255*cell[a][b][0])+","+Math.floor(255*cell[a][b][1])+","+Math.floor(255*cell[a][b][2])+")";
+            ctx.fillRect(a*boxSize,b*boxSize,boxSize,boxSize);
+        }
+    }
+}
+function newWeights(){
+    weightTensor = [];
+    for(a=0;a<3;a++){
+        weightTensor[a] = [];
+        for(b=0;b<3;b++){
+            weightTensor[a][b] = [];
+            for(c=0;c<vectorSize;c++){
+                weightTensor[a][b][c] = [];
+                for(d=0;d<vectorSize;d++){
+                    bates = 0;
+                    for(e=0;e<10;e++){
+                        bates += Math.random();
+                    }
+                    bates /= 5;
+                    bates -= 1;
+                    bates *= 1.4;
+                    weightTensor[a][b][c][d] = bates;
+                }
+            }
+        }
+    }
+    return weightTensor;
+}
+cnvs = document.getElementById("theCanvas");
+ctx = cnvs.getContext("2d");
+across = 60;
+boxSize = 10;
+vectorSize = 6;
+cell = [];
+next = [];
+for(a=0;a<across;a++){
+    cell[a] = [];
+    next[a] = [];
+    for(b=0;b<across;b++){
+        cell[a][b] = [];
+        next[a][b] = [];
+        for(c=0;c<vectorSize;c++){
+            cell[a][b][c] = Math.random();
+            next[a][b][c] = 0;
+        }
+    }
+}
+conv = newWeights();
+counter = 0;
+theInterval = setInterval(function(){
+    for(a=1;a<across-1;a++){
+        for(b=1;b<across-1;b++){
+            for(c=0;c<vectorSize;c++){
+                next[a][b][c] = 0;
+                for(d=0;d<vectorSize;d++){
+                    for(e=0;e<3;e++){
+                        for(f=0;f<3;f++){
+                            next[a][b][c] += cell[a-1+e][b-1+f][c]*conv[e][f][c][d];
+                        }
+                    }
+                }
+                next[a][b][c] = Math.tanh(next[a][b][c])+1;
+                next[a][b][c] /= 2;
+            }
+        }
+    }
+    for(a=1;a<across-1;a++){
+        for(b=1;b<across-1;b++){
+            for(c=0;c<vectorSize;c++){
+                cell[a][b][c] = next[a][b][c];
+            }
+        }
+    }
+    redraw();/*
+    counter++;
+    if(counter>100){
+        counter = 0;
+        conv = newWeights();
+    }*/
+},33)
+document.getElementById("random").onclick = function(){conv = newWeights();};
+document.getElementById("pause").onclick = function(){clearInterval(theInterval)};
+</script>
+</html>
